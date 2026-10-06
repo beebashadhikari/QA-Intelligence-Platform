@@ -1,5 +1,5 @@
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.app.database import Base
 
@@ -7,7 +7,10 @@ from backend.app.database import Base
 class Release(Base):
     __tablename__ = "releases"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        index=True,
+    )
 
     release_version: Mapped[str] = mapped_column(
         String(50),
@@ -33,4 +36,14 @@ class Release(Base):
     smoke_status: Mapped[str] = mapped_column(
         String(30),
         nullable=False,
+    )
+
+    executions = relationship(
+        "TestExecution",
+        back_populates="release",
+    )
+
+    defects = relationship(
+        "Defect",
+        back_populates="release",
     )

@@ -1,11 +1,14 @@
 from backend.app.database import Base, engine
-from backend.app.models import Release
+
+from backend.app.models.release import Release
+from backend.app.models.case import TestCase
+from backend.app.models.execution import TestExecution
+from backend.app.models.defect import Defect
+from backend.app.models.change import Change
+from backend.app.models.agent_run import AgentRun
+from backend.app.models.agent_tool_call import AgentToolCall
 
 
-def create_database():
-    Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
-
-if __name__ == "__main__":
-    create_database()
-    print("Database created successfully.")
+print("Database tables created successfully.")

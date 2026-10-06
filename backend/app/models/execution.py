@@ -1,5 +1,5 @@
-from sqlalchemy import Boolean, Float, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Boolean, Float, ForeignKey, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.app.database import Base
 
@@ -7,10 +7,18 @@ from backend.app.database import Base
 class TestExecution(Base):
     __tablename__ = "test_executions"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        index=True,
+    )
 
     test_case_id: Mapped[str] = mapped_column(
         String(100),
+        nullable=False,
+    )
+
+    release_id: Mapped[int] = mapped_column(
+        ForeignKey("releases.id"),
         nullable=False,
     )
 
@@ -43,4 +51,9 @@ class TestExecution(Base):
     failure_reason: Mapped[str | None] = mapped_column(
         String(500),
         nullable=True,
+    )
+
+    release = relationship(
+        "Release",
+        back_populates="executions",
     )
