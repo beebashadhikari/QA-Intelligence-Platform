@@ -1,5 +1,8 @@
 # QA Intelligence Platform
 
+
+
+
 An AI-assisted QA engineering platform that combines deterministic QA intelligence, reusable QA skills, REST APIs, MCP tools, and AI agents to support evidence-driven release analysis.
 
 > **Core principle: AI assists. Evidence decides.**
@@ -55,3 +58,11 @@ The platform does **not** allow the AI to invent QA evidence.
                  |                      OpenCode       Inspector
                  |
                  +-------------> QA API :8000
+## Configuration
+
+The platform supports environment-based configuration for the QA API and MCP server.
+
+Create a local `.env` file based on `.env.example`:
+
+```bash
+cp .env.example .env
