@@ -518,10 +518,11 @@ After the MCP server is running, OpenCode can connect to the QA Intelligence Pla
 
 # QA Skills
 
-The project includes reusable QA reasoning skills.
+The project includes reusable, evidence-driven QA reasoning skills that can be used by AI coding assistants and OpenCode.
 
 ```text
 skills/
+
 ├── senior_qa/
 │   └── SKILL.md
 │
@@ -538,23 +539,23 @@ skills/
     └── SKILL.md
 ```
 
-## Senior QA Skill
+### Senior QA Skill
 
 Provides senior-level QA reasoning principles and evidence-driven analysis.
 
-## Test Intelligence
+### Test Intelligence
 
 Focuses on test execution analysis and identifying testing priorities.
 
-## Risk Intelligence
+### Risk Intelligence
 
 Analyzes risk based on available release and testing evidence.
 
-## Release Decision
+### Release Decision
 
 Evaluates release readiness using the platform's quality evidence.
 
-## QA Agent
+### QA Agent
 
 Acts as the master orchestration skill.
 
@@ -572,7 +573,92 @@ The QA Agent combines:
 
 The final release decision remains with the human QA/release owner.
 
----
+## Using the `qa-intelligence` Skill in Another Project
+
+The `qa-intelligence` skill can also be reused independently in another OpenCode project.
+
+The main skill is located at:
+
+```text
+skills/qa_agent/SKILL.md
+```
+
+To use it in another OpenCode project, copy the skill into:
+
+```text
+your-project/
+└── .opencode/
+    └── skills/
+        └── qa-intelligence/
+            └── SKILL.md
+```
+
+Then open the project with OpenCode:
+
+```bash
+opencode
+```
+
+Once the skill is loaded, invoke it with:
+
+```text
+@qa-intelligence
+```
+
+For example:
+
+```text
+@qa-intelligence
+
+Analyze this project and identify the highest QA risks.
+```
+
+The skill provides the **QA reasoning and methodology**. It does not automatically contain project-specific QA evidence.
+
+The AI should use available project evidence such as:
+
+* Test results
+* Code changes
+* Defects
+* Release information
+* CI/CD results
+* Project files
+* APIs
+* MCP tools
+* Other connected QA systems
+
+If required evidence is unavailable, the skill should identify it as **MISSING EVIDENCE** rather than inventing information.
+
+### Using the Full Platform
+
+You can either use the reusable skill independently or use the complete QA Intelligence Platform with its API and MCP server.
+
+**Reusable skill:**
+
+```text
+Your Project
+     ↓
+@qa-intelligence
+     ↓
+AI QA reasoning
+```
+
+**Full platform:**
+
+```text
+Your Project
+     ↓
+QA API
+     ↓
+MCP Server
+     ↓
+@qa-intelligence
+     ↓
+AI
+```
+
+The skill is designed to be reusable across projects and is not tied to a specific AI model. The AI platform must support custom skills or equivalent instruction mechanisms.
+
 
 # Evidence Model
 
