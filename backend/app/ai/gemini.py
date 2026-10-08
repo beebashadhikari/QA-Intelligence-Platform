@@ -1,11 +1,13 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
 
-load_dotenv()
+# Load the repository .env explicitly (single source of configuration).
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 
 def get_gemini_client() -> genai.Client:

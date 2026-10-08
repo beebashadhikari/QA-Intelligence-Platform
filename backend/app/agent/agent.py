@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 from time import perf_counter
 
 from dotenv import load_dotenv
@@ -19,7 +20,9 @@ from backend.app.ai.tools import QA_TOOLS
 from backend.app.schemas.agent import AgentAnalyzeResponse
 
 
-load_dotenv()
+# Load the repository .env explicitly so configuration is resolved from
+# one known file, never from a stray nested .env.
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 
 DEFAULT_MODEL = os.getenv(

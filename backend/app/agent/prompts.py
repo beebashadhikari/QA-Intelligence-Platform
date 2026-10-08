@@ -11,10 +11,10 @@ SKILL_PATH = (
 
 
 def load_qa_agent_skill() -> str:
-   if not SKILL_PATH.exists():
-    raise FileNotFoundError(
-        f"QA Agent skill was not found at: {SKILL_PATH}"
-    )
+    if not SKILL_PATH.exists():
+        raise FileNotFoundError(
+            f"QA Agent skill was not found at: {SKILL_PATH}"
+        )
 
     return SKILL_PATH.read_text(
         encoding="utf-8",

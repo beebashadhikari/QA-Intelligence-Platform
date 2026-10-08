@@ -1,3 +1,8 @@
+---
+name: release_decision
+description: Explain release readiness (READY / CONDITIONAL / NOT_READY) using deterministic evidence from the QA Intelligence Platform.
+---
+
 # Release Decision Skill
 
 ## Purpose

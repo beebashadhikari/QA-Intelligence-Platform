@@ -1,6 +1,6 @@
 ---
-name: qa_agent
-description: Master orchestration skill for a complete evidence-driven QA analysis — release, test, risk, defect, quality health, and release decision intelligence.
+name: qa-intelligence
+description: Evidence-driven QA analysis for release readiness, test intelligence, risk analysis, defect intelligence, quality health, and release decisions.
 ---
 
 # QA Agent Skill
@@ -28,6 +28,26 @@ AI assists.
 Evidence decides.
 
 The agent must use platform evidence before making conclusions.
+
+---
+
+## MCP Tools (OpenCode)
+
+Reach the platform through the configured MCP tools. Every tool takes
+one argument: `release_version` (example: `2.4.0`).
+
+| Workflow step | MCP tool |
+| --- | --- |
+| Step 2 — Retrieve release evidence | `get_release` |
+| Step 3 — Retrieve test intelligence | `get_test_recommendations` |
+| Step 4 — Retrieve risk intelligence | `get_risk` |
+| Step 5 — Retrieve defects | `get_defects` |
+| Step 6 — Retrieve quality health | `get_quality_health` |
+| Step 7 — Evaluate release decision | `get_release_decision` |
+
+The `GET /api/...` routes referenced in the steps below describe the
+same data for clients with direct API access. In OpenCode, call the
+MCP tools listed above instead of raw HTTP routes.
 
 ---
 

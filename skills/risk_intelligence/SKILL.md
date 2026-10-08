@@ -1,3 +1,8 @@
+---
+name: risk_intelligence
+description: Analyze release and module-level risk using evidence-based scores, code changes, high-severity defects, and failed tests from the QA Intelligence Platform.
+---
+
 # Risk Intelligence Skill
 
 ## Purpose

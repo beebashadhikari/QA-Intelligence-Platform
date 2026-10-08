@@ -1,3 +1,8 @@
+---
+name: test_intelligence
+description: Prioritize which tests should execute first using scores, risk levels, failures, blockers, and defect evidence from the QA Intelligence Platform.
+---
+
 # Test Intelligence Skill
 
 ## Purpose

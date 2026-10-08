@@ -1,5 +1,22 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from backend.app.database import Base, engine
+
+# Import every model so Base.metadata knows the full schema before
+# create_all() runs below. Without these tables the API returns HTTP 500
+# on every database-backed route.
+from backend.app import models  # noqa: F401
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Create the tables on startup if they are missing (idempotent).
+    # This guarantees the API never runs against an empty database file.
+    Base.metadata.create_all(bind=engine)
+    yield
 
 from backend.app.api.agent import router as agent_router
 from backend.app.api.dashboard import (
@@ -21,6 +38,7 @@ app = FastAPI(
     title="QA Intelligence Platform",
     description="AI-powered software quality intelligence system",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 

@@ -1,11 +1,24 @@
 import json
 import os
+from pathlib import Path
 from urllib.error import HTTPError, URLError
+from urllib.parse import quote
 from urllib.request import urlopen
+
+from dotenv import load_dotenv
 from mcp.server.mcpserver import MCPServer
 
-from backend.app.database import SessionLocal
+from backend.app import models  # noqa: F401  (registers every table)
+from backend.app.database import Base, SessionLocal, engine
 from backend.app.services.release_decision import calculate_release_decision
+
+
+# Load the repository .env so QA_API_BASE_URL, MCP_HOST, and MCP_PORT can
+# be configured exactly as documented in the README. Real process
+# environment variables still take precedence over .env values.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+load_dotenv(REPO_ROOT / ".env")
 
 
 API_BASE_URL = os.getenv(
@@ -31,6 +44,13 @@ server = MCPServer(
 )
 
 
+def ensure_database() -> None:
+    """Create missing tables so the direct-DB tool never fails on a
+    fresh database file."""
+
+    Base.metadata.create_all(bind=engine)
+
+
 def get_api_data(path: str) -> dict:
     url = f"{API_BASE_URL}{path}"
 
@@ -50,6 +70,19 @@ def get_api_data(path: str) -> dict:
             "details": str(exc.reason),
         }
 
+    except Exception as exc:  # noqa: BLE001 - tool must never raise
+        return {
+            "error": "QA Intelligence API request failed.",
+            "path": path,
+            "details": str(exc),
+        }
+
+
+def _version_path(release_version: str, suffix: str = "") -> str:
+    """Build a safe URL path segment for a release version."""
+
+    return f"/api/releases/{quote(str(release_version), safe='')}{suffix}"
+
 
 @server.tool(
     name="get_release",
@@ -61,7 +94,7 @@ def get_api_data(path: str) -> dict:
 )
 async def get_release(release_version: str) -> dict:
     return get_api_data(
-        f"/api/releases/{release_version}"
+        _version_path(release_version)
     )
 
 
@@ -74,7 +107,7 @@ async def get_release(release_version: str) -> dict:
 )
 async def get_test_recommendations(release_version: str) -> dict:
     return get_api_data(
-        f"/api/releases/{release_version}/recommendations"
+        _version_path(release_version, "/recommendations")
     )
 
 
@@ -88,7 +121,7 @@ async def get_test_recommendations(release_version: str) -> dict:
 )
 async def get_risk(release_version: str) -> dict:
     return get_api_data(
-        f"/api/releases/{release_version}/risk"
+        _version_path(release_version, "/risk")
     )
 
 
@@ -101,7 +134,7 @@ async def get_risk(release_version: str) -> dict:
 )
 async def get_defects(release_version: str) -> dict:
     return get_api_data(
-        f"/api/releases/{release_version}/defects"
+        _version_path(release_version, "/defects")
     )
 
 
@@ -115,7 +148,7 @@ async def get_defects(release_version: str) -> dict:
 )
 async def get_quality_health(release_version: str) -> dict:
     return get_api_data(
-        f"/api/releases/{release_version}/quality"
+        _version_path(release_version, "/quality")
     )
 
 
@@ -128,21 +161,41 @@ async def get_quality_health(release_version: str) -> dict:
     ),
 )
 async def get_release_decision(release_version: str) -> dict:
-    db = SessionLocal()
-
     try:
-        decision = calculate_release_decision(
-            db=db,
-            release_version=release_version,
-        )
+        ensure_database()
 
-        return decision.model_dump()
+        db = SessionLocal()
 
-    finally:
-        db.close()
+        try:
+            decision = calculate_release_decision(
+                db=db,
+                release_version=release_version,
+            )
+
+            return decision.model_dump()
+
+        finally:
+            db.close()
+
+    except ValueError as exc:
+        # Missing release: return the same structured error shape the
+        # HTTP-backed tools use instead of raising a tool exception.
+        return {
+            "error": str(exc),
+            "release_version": release_version,
+        }
+
+    except Exception as exc:  # noqa: BLE001 - tool must never raise
+        return {
+            "error": "Release decision could not be calculated.",
+            "release_version": release_version,
+            "details": str(exc),
+        }
 
 
 if __name__ == "__main__":
+    ensure_database()
+
     server.run(
         transport="streamable-http",
         host=MCP_HOST,

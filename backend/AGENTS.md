@@ -12,7 +12,8 @@ Never invent QA evidence.
 
 ## QA Skills
 
-The project contains reusable QA skills:
+The project contains reusable QA skills (paths relative to the
+repository root):
 
 - `skills/senior_qa/SKILL.md`
 - `skills/test_intelligence/SKILL.md`

@@ -1,3 +1,8 @@
+---
+name: senior_qa
+description: Senior QA engineering methodology — evidence-driven quality analysis with FACT / INFERENCE / MISSING EVIDENCE reasoning and risk-aware recommendations.
+---
+
 # Senior QA Intelligence Skill
 
 ## Purpose
